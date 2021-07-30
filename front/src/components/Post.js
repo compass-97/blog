@@ -1,13 +1,14 @@
 import React,{useState,useEffect} from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import parse from 'html-react-parser';
 
 const Postwrap = styled.div``
 const Container = styled.div`width: 1050px; margin: 0 auto;`
 const Row = styled.div``
 
 const Title = styled.p`padding: 10px 20px; margin-bottom: 20px; border-bottom: 1px solid #dbdbdb;`
-const Content = styled.p`padding: 10px 20px;`
+const Content = styled.p`padding: 10px 20px; word-wrap: break-word;`
 
 const Btndiv = styled.div`text-align: center; margin-top: 100px;`
 const Custombtn = styled.button`padding: 15px 25px; margin: 10px; border-radius: 10px; border: none; font-size: 18px; font-weight: bold; background: gray; color: #fff; &:hover {cursor:pointer; background: black;}`
@@ -51,7 +52,7 @@ const Post = ({match,history}) => {
                         <Title>{post.title}</Title>
                     </div>
                     <div>
-                        <Content>{post.content}</Content>
+                        <Content>{parse(post.content)}</Content>
                     </div>
                     <Btndiv>
                         <Custombtn onClick={movetoupdate}>수정하기</Custombtn>

@@ -7,7 +7,7 @@ const Container = styled.div`width: 1050px; margin: 0 auto;`
 const Row = styled.div``
 
 const Logo = styled.h1`line-height: 100px; display: inline-block;`
-const Createlink = styled(Link)`margin-left : 20px;`
+const Createlink = styled(Link)`margin-left: 20px;`
 
 const Header = () => {
     return (

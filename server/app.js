@@ -3,11 +3,14 @@ const app = express();
 const Port = 8000;
 const cors = require('cors');
 const mysql = require('mysql');
+const multer = require('multer');
 
+const upload = multer({dest: 'uploads/'})
 
 app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
+app.use('/uploads',express.static('uploads'));
 
 const options = {
     host: 'localhost',
@@ -18,7 +21,9 @@ const options = {
 
 const db = mysql.createPool(options)
 
-
+app.get('/test',(req,res)=>{
+    res.send("hi")
+})
 app.post('/api/createpost',(req,res)=>{
     const title = req.body.title;
     const content = req.body.content;
@@ -64,6 +69,11 @@ app.delete('/api/deletepost/:id',(req,res)=>{
         res.end()
     })
 })
+
+app.post('/api/test',upload.single('image'),(req,res)=>{
+    res.send(req.file.path)
+})
+
 app.listen(Port, () => {
     console.log(Port,"connected")
 })

@@ -13,6 +13,18 @@ const GlobalStyle = createGlobalStyle`
 a {text-decoration: none; color: black;}
 
 ul,ol,li {list-style: none;}
+
+.ql-size-small {
+  font-size: 0.75em;
+}
+
+.ql-size-large {
+  font-size: 1.5em;
+}
+
+.ql-size-huge {
+  font-size: 2.5em;
+}
 `
 
 function App() {
