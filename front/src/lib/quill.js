@@ -4,6 +4,7 @@ import axios from 'axios';
 import qs from 'query-string';
 import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
+import { BACKEND_ADDRESS } from "../constants.js/address";
 
 const Inputtitle = styled.input`display: block; width: 100%; box-sizing: border-box; padding: 10px 20px; margin-bottom: 20px; border: none; border-bottom: 1px solid #dbdbdb;`
 const ReactQuilldiv = styled.div`height: 700px;`
@@ -12,7 +13,6 @@ const SubmitBtn = styled.button`display: block; width: 200px; height: 50px; font
 
 
 const EditorComponent = (props) => {
-    const url = `http://localhost:8000`
     const type = props.match.params.id
     const QuillRef = useRef();
 
@@ -21,7 +21,7 @@ const EditorComponent = (props) => {
 
     useEffect(()=>{
         if(type) {
-            axios.get(url+`/api/readpost/${type}`).then((res)=>{
+            axios.get(BACKEND_ADDRESS+`/api/readpost/${type}`).then((res)=>{
                 const title = res.data[0].title
                 const content = res.data[0].content
                 setTitle(title)
@@ -38,7 +38,7 @@ const EditorComponent = (props) => {
 
     const submit = () => {
         if(type) {
-            axios.put(url+`/api/updatepost/${type}`,{
+            axios.put(BACKEND_ADDRESS+`/api/updatepost/${type}`,{
                 title: title,
                 content: contents
             }).then(()=>{
@@ -46,7 +46,7 @@ const EditorComponent = (props) => {
                 props.history.push(`/post/${type}`)
             })
         } else {
-            axios.post(url+`/api/createpost`,{
+            axios.post(BACKEND_ADDRESS+`/api/createpost`,{
                 title: title,
                 content: contents
             }).then(()=>{
@@ -66,7 +66,7 @@ const EditorComponent = (props) => {
             const file = input.files[0]
             const fd = new FormData();
             fd.append('image',file);
-            axios.post(url+`/api/test`,fd,{
+            axios.post(BACKEND_ADDRESS+`/api/test`,fd,{
                 headers: {
                     'content-type': 'multipart/form-data'
                 }
@@ -77,7 +77,7 @@ const EditorComponent = (props) => {
                 quill.setSelection(range,1);
                 quill.clipboard.dangerouslyPasteHTML(
                     range,
-                    `<img src='${url}/${path}' alt='업로드한이미지입니다' />`
+                    `<img src='${BACKEND_ADDRESS}/${path}' alt='업로드한이미지입니다' />`
                 )
             })
         }

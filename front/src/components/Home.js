@@ -2,6 +2,7 @@ import React,{useState,useEffect} from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { BACKEND_ADDRESS } from '../constants.js/address';
 
 const Homewrap = styled.div``
 const Container = styled.div`width: 1050px; margin: 0 auto;`
@@ -10,10 +11,9 @@ const Row = styled.div``
 const Postli = styled.li`padding: 5px 10px; border-bottom: 1px solid #dbdbdb;`
 
 const Home = () => {
-    const url = `http://localhost:8000`
     const [postlist,setPostlist] = useState([])
     useEffect(()=>{
-        axios.get(url+`/api/readpostlist`).then((res)=>{
+        axios.get(BACKEND_ADDRESS+`/api/readpostlist`).then((res)=>{
             setPostlist(postlist.concat(res.data))
         })
     },[])

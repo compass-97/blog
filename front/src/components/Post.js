@@ -2,6 +2,7 @@ import React,{useState,useEffect} from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import parse from 'html-react-parser';
+import { BACKEND_ADDRESS } from '../constants.js/address';
 
 const Postwrap = styled.div``
 const Container = styled.div`width: 1050px; margin: 0 auto;`
@@ -14,14 +15,13 @@ const Btndiv = styled.div`text-align: center; margin-top: 100px;`
 const Custombtn = styled.button`padding: 15px 25px; margin: 10px; border-radius: 10px; border: none; font-size: 18px; font-weight: bold; background: gray; color: #fff; &:hover {cursor:pointer; background: black;}`
 
 const Post = ({match,history}) => {
-    const url = `http://localhost:8000`
     const id = match.params.id
     const [post,setPost] = useState({
         title:'',
         content:''
     })
     useEffect(()=>{
-        axios.get(url+`/api/readpost/${id}`).then((res)=>{
+        axios.get(BACKEND_ADDRESS+`/api/readpost/${id}`).then((res)=>{
             const title = res.data[0].title
             const content = res.data[0].content
             setPost({
@@ -36,7 +36,7 @@ const Post = ({match,history}) => {
     }
     const deletepost = () => {
         if(window.confirm('삭제하시겠습니까?')){
-            axios.delete(url+`/api/deletepost/${id}`).then(()=>{
+            axios.delete(BACKEND_ADDRESS+`/api/deletepost/${id}`).then(()=>{
                 alert('삭제되었습니다')
                 history.push('/')
             })
