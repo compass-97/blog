@@ -12,6 +12,7 @@ const SubmitBtn = styled.button`display: block; width: 200px; height: 50px; font
 
 
 const EditorComponent = (props) => {
+    const url = `http://localhost:8000`
     const type = props.match.params.id
     const QuillRef = useRef();
 
@@ -20,7 +21,7 @@ const EditorComponent = (props) => {
 
     useEffect(()=>{
         if(type) {
-            axios.get(`http://localhost:8000/api/readpost/${type}`).then((res)=>{
+            axios.get(url+`/api/readpost/${type}`).then((res)=>{
                 const title = res.data[0].title
                 const content = res.data[0].content
                 setTitle(title)
@@ -37,7 +38,7 @@ const EditorComponent = (props) => {
 
     const submit = () => {
         if(type) {
-            axios.put(`http://localhost:8000/api/updatepost/${type}`,{
+            axios.put(url+`/api/updatepost/${type}`,{
                 title: title,
                 content: contents
             }).then(()=>{
@@ -45,7 +46,7 @@ const EditorComponent = (props) => {
                 props.history.push(`/post/${type}`)
             })
         } else {
-            axios.post(`http://localhost:8000/api/createpost`,{
+            axios.post(url+`/api/createpost`,{
                 title: title,
                 content: contents
             }).then(()=>{
@@ -65,7 +66,7 @@ const EditorComponent = (props) => {
             const file = input.files[0]
             const fd = new FormData();
             fd.append('image',file);
-            axios.post(`http://localhost:8000/api/test`,fd,{
+            axios.post(url+`/api/test`,fd,{
                 headers: {
                     'content-type': 'multipart/form-data'
                 }
@@ -76,7 +77,7 @@ const EditorComponent = (props) => {
                 quill.setSelection(range,1);
                 quill.clipboard.dangerouslyPasteHTML(
                     range,
-                    `<img src='http://localhost:8000/${path}' alt='업로드한이미지입니다' />`
+                    `<img src='${url}/${path}' alt='업로드한이미지입니다' />`
                 )
             })
         }
@@ -108,7 +109,6 @@ const EditorComponent = (props) => {
 
     return (
         <>
-        {/* <button onClick={()=>console.log(title,contents)}>dkfajsld</button> */}
         <div>
             <Inputtitle type='text'  placeholder='제목을 입력해주세요' value={title} onChange={gettitle} />
         </div>

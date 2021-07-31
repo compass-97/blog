@@ -14,13 +14,14 @@ const Btndiv = styled.div`text-align: center; margin-top: 100px;`
 const Custombtn = styled.button`padding: 15px 25px; margin: 10px; border-radius: 10px; border: none; font-size: 18px; font-weight: bold; background: gray; color: #fff; &:hover {cursor:pointer; background: black;}`
 
 const Post = ({match,history}) => {
+    const url = `http://localhost:8000`
     const id = match.params.id
     const [post,setPost] = useState({
         title:'',
         content:''
     })
     useEffect(()=>{
-        axios.get(`http://localhost:8000/api/readpost/${id}`).then((res)=>{
+        axios.get(url+`/api/readpost/${id}`).then((res)=>{
             const title = res.data[0].title
             const content = res.data[0].content
             setPost({
@@ -35,7 +36,7 @@ const Post = ({match,history}) => {
     }
     const deletepost = () => {
         if(window.confirm('삭제하시겠습니까?')){
-            axios.delete(`http://localhost:8000/api/deletepost/${id}`).then(()=>{
+            axios.delete(url+`/api/deletepost/${id}`).then(()=>{
                 alert('삭제되었습니다')
                 history.push('/')
             })

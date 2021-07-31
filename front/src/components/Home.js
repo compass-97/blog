@@ -10,9 +10,10 @@ const Row = styled.div``
 const Postli = styled.li`padding: 5px 10px; border-bottom: 1px solid #dbdbdb;`
 
 const Home = () => {
+    const url = `http://localhost:8000`
     const [postlist,setPostlist] = useState([])
     useEffect(()=>{
-        axios.get(`http://localhost:8000/api/readpostlist`).then((res)=>{
+        axios.get(url+`/api/readpostlist`).then((res)=>{
             setPostlist(postlist.concat(res.data))
         })
     },[])
