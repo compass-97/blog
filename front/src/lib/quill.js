@@ -1,15 +1,23 @@
 import React, {useRef,useEffect,useState,useMemo} from "react";
 import styled from "styled-components";
 import axios from 'axios';
-import qs from 'query-string';
-import ReactQuill from 'react-quill';
+import ReactQuill, {Quill} from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-import { BACKEND_ADDRESS } from "../constants.js/address";
+import { BACKEND_ADDRESS } from "../constants/address";
+import ImageResize from '@looop/quill-image-resize-module-react';
+Quill.register('modules/ImageResize', ImageResize)
+
 
 const Inputtitle = styled.input`display: block; width: 100%; box-sizing: border-box; padding: 10px 20px; margin-bottom: 20px; border: none; border-bottom: 1px solid #dbdbdb;`
 const ReactQuilldiv = styled.div`height: 700px;`
 const Submitbtndiv = styled.div`margin-bottom: 100px;`
 const SubmitBtn = styled.button`display: block; width: 200px; height: 50px; font-size: 16px; font-weight: bold; padding: 5px; margin: 0 auto; background: #f4f4f4; border: 2px solid #f4f4f4; border-radius: 10px; transition: all .2s ease; &:hover {background: gray; color: #fff; cursor: pointer;}`
+
+const Thumbnailwrap = styled.div`margin-bottom: 30px;`
+const Thumbnailcontainer = styled.div`margin-bottom: 10px;`
+const Thumbnail = styled.img`width: 200px; height: 200px; `
+const InputThumbnaillabel = styled.label`padding: 5px 15px; margin-top: 20px; margin-left: 40px; cursor: pointer; color: gray; border: 1px solid gray; border-radius: 3px;`
+const InputThumbnail = styled.input`position: absolute; left: -99999px;`
 
 
 const EditorComponent = (props) => {
@@ -18,6 +26,7 @@ const EditorComponent = (props) => {
 
     const [title,setTitle] = useState('')
     const [contents,setContents] = useState('');
+    const [thumbnail,setThumbnail] = useState('');
 
     useEffect(()=>{
         if(type) {
@@ -40,7 +49,8 @@ const EditorComponent = (props) => {
         if(type) {
             axios.put(BACKEND_ADDRESS+`/api/updatepost/${type}`,{
                 title: title,
-                content: contents
+                content: contents,
+                thumbnailurl: thumbnail
             }).then(()=>{
                 alert('수정되었습니다')
                 props.history.push(`/post/${type}`)
@@ -48,13 +58,15 @@ const EditorComponent = (props) => {
         } else {
             axios.post(BACKEND_ADDRESS+`/api/createpost`,{
                 title: title,
-                content: contents
+                content: contents,
+                thumbnailurl: thumbnail
             }).then(()=>{
                 alert('등록되었습니다.')
                 props.history.push('/')
             })
         }
     }
+    
 
     const imageHandler = () => {
         const input = document.createElement('input')
@@ -65,22 +77,35 @@ const EditorComponent = (props) => {
         input.onchange = () => {
             const file = input.files[0]
             const fd = new FormData();
-            fd.append('image',file);
-            axios.post(BACKEND_ADDRESS+`/api/test`,fd,{
+            fd.append('thumbnail',file);
+            axios.post(BACKEND_ADDRESS+`/api/thumbnail`,fd,{
                 headers: {
                     'content-type': 'multipart/form-data'
                 }
             }).then((res)=>{
-                const path = res.data
+                const location = res.data
                 const range = QuillRef.current.getEditor().getSelection().index;
                 const quill = QuillRef.current.getEditor()
                 quill.setSelection(range,1);
                 quill.clipboard.dangerouslyPasteHTML(
                     range,
-                    `<img src='${BACKEND_ADDRESS}/${path}' alt='업로드한이미지입니다' />`
+                    `<img src='${location}' alt='업로드한이미지입니다' />`
                 )
             })
         }
+    }
+
+    const thumbnailhandler = e => {
+        const thumbnailfile = e.target.files[0]
+        const thumbnailfd = new FormData();
+        thumbnailfd.append('thumbnail',thumbnailfile)
+        axios.post(BACKEND_ADDRESS+`/api/thumbnail`,thumbnailfd,{
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        }).then((res)=>{
+            setThumbnail(res.data)
+        })
     }
 
 
@@ -101,14 +126,27 @@ const EditorComponent = (props) => {
                 ],
                 handlers: {
                     image: imageHandler,
-                },
+                }
             },
+            ImageResize : {
+                modules : ['Resize']
+            }
         }),
         []
     )
 
+
+
+    
     return (
         <>
+        <Thumbnailwrap>
+            <Thumbnailcontainer id='thumbnailcontainer'>
+                <Thumbnail src={thumbnail} />
+            </Thumbnailcontainer>
+            <InputThumbnaillabel htmlFor='thumbnailid'>썸네일업로드</InputThumbnaillabel>
+            <InputThumbnail type='file' accept='image/*' onChange={thumbnailhandler} id='thumbnailid' />
+        </Thumbnailwrap>
         <div>
             <Inputtitle type='text'  placeholder='제목을 입력해주세요' value={title} onChange={gettitle} />
         </div>
@@ -127,7 +165,6 @@ const EditorComponent = (props) => {
             placeholder='내용을 입력해주세요'
         />
         </ReactQuilldiv>
-        <textarea id='testest'></textarea>
         <Submitbtndiv>
             <SubmitBtn onClick={submit}>글작성</SubmitBtn>
         </Submitbtndiv>

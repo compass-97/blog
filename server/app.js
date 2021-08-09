@@ -4,8 +4,22 @@ const Port = 8000;
 const cors = require('cors');
 const mysql = require('mysql');
 const multer = require('multer');
+const multerS3 = require('multer-s3');
+const aws = require('aws-sdk');
+aws.config.loadFromPath(__dirname+'/config/s3.json');
 
-const upload = multer({dest: 'uploads/'})
+const s3 = new aws.S3();
+const upload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: 'compass-s3-blog-bucket',
+        acl: 'public-read-write',
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+        key: function(req,file,cb){
+            cb(null,Date.now().toString()+file.originalname);
+        }
+    })
+})
 
 app.use(cors())
 app.use(express.json());
@@ -21,14 +35,12 @@ const options = {
 
 const db = mysql.createPool(options)
 
-app.get('/test',(req,res)=>{
-    res.send("hi")
-})
 app.post('/api/createpost',(req,res)=>{
     const title = req.body.title;
     const content = req.body.content;
-    const sql = `insert into post (title,content) values(?,?)`
-    db.query(sql,[title,content],(err)=>{
+    const thumbnailurl = req.body.thumbnailurl
+    const sql = `insert into post (title,content,thumbnail) values(?,?,?)`
+    db.query(sql,[title,content,thumbnailurl],(err)=>{
         if(err) console.log('insert err')
         res.end()
     })
@@ -54,8 +66,9 @@ app.put('/api/updatepost/:id',(req,res)=>{
     const id = req.params.id
     const title = req.body.title
     const content = req.body.content
-    const sql = `update post set title = ? , content = ? where id = ?`
-    db.query(sql,[title,content,id],(err,result)=>{
+    const thumbnailurl = req.body.thumbnailurl
+    const sql = `update post set title = ? , content = ? , thumbnail = ? where id = ?`
+    db.query(sql,[title,content,thumbnailurl,id],(err,result)=>{
         if(err) console.log("update err")
         res.end()
     })
@@ -70,8 +83,12 @@ app.delete('/api/deletepost/:id',(req,res)=>{
     })
 })
 
-app.post('/api/test',upload.single('image'),(req,res)=>{
+app.post('/api/imageupload',upload.single('image'),(req,res)=>{
     res.send(req.file.path)
+})
+
+app.post('/api/thumbnail',upload.single('thumbnail'),(req,res)=>{
+    res.send(req.file.location)
 })
 
 app.listen(Port, () => {

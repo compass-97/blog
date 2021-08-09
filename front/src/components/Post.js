@@ -2,7 +2,7 @@ import React,{useState,useEffect} from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import parse from 'html-react-parser';
-import { BACKEND_ADDRESS } from '../constants.js/address';
+import { BACKEND_ADDRESS } from '../constants/address';
 
 const Postwrap = styled.div``
 const Container = styled.div`width: 1050px; margin: 0 auto;`
