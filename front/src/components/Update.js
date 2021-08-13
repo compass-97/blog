@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Reactquill from '../lib/quill';
 
@@ -10,7 +10,6 @@ const Row = styled.div``
 
 
 const Update = (props) => {
-    
     return (
         <Updatewrap>
             <Container>
