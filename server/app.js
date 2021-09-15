@@ -7,10 +7,10 @@ const MySQLStore = require('express-mysql-session')(session);
 const cookieParser = require('cookie-parser');
 
 const options = {
-    host: 'localhost',
-    user: 'root',
-    password: 'cbm96439633@',
-    database: 'blog'
+    host: '',
+    user: '',
+    password: '@',
+    database: ''
 }
 const sessionStore = new MySQLStore(options);
 
